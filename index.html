@@ -113,23 +113,34 @@
   <div class="tap-tip" id="tapTip">点一下开启祝福 🎶</div>
 
   <script>
-    /* ===== 点击一次，播放音频（核心代码）===== */
-    const bgm = document.getElementById("bgm");
-    const sfx = document.getElementById("sfx");
-    const tip = document.getElementById("tapTip");
+    /* ===== 手机优先：点击一次播放音频 ===== */
+const bgm = document.getElementById("bgm");
+const sfx = document.getElementById("sfx");
+const tip = document.getElementById("tapTip");
 
-    function startAudio() {
-      bgm.volume = 0.6;
-      sfx.volume = 0.35;
+function startAudio() {
+  if (bgm) {
+    bgm.volume = 0.6;
+    bgm.play().catch(() => {});
+  }
+  if (sfx) {
+    sfx.volume = 0.35;
+    sfx.play().catch(() => {});
+  }
 
-      bgm.play().catch(() => {});
-      sfx.play().catch(() => {});
+  if (tip) tip.style.display = "none";
 
-      tip.style.display = "none";
-      window.removeEventListener("click", startAudio);
-    }
+  document.removeEventListener("touchstart", startAudio);
+  document.removeEventListener("pointerdown", startAudio);
+  document.removeEventListener("click", startAudio);
+}
 
-    window.addEventListener("click", startAudio);
+// 🔴 手机端必须
+document.addEventListener("touchstart", startAudio, { once: true });
+// 🔴 新浏览器
+document.addEventListener("pointerdown", startAudio, { once: true });
+// 🔴 PC 兜底
+document.addEventListener("click", startAudio, { once: true });
 
     /* ===== 烟花动画（原逻辑，未改）===== */
     const canvas = document.getElementById("fireworks");
